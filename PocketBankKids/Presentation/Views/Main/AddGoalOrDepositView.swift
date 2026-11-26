@@ -6,6 +6,8 @@
 //
 import SwiftUI
 
+
+
 struct AddGoalOrDepositView: View {
     @Environment(\.dismiss) private var dismiss
     let dashboardViewModel: DashboardViewModel
@@ -15,7 +17,13 @@ struct AddGoalOrDepositView: View {
     @State private var amountText = ""
     @State private var selectedIcon = "bicycle"
     
-    let icons = ["bicycle", "gamecontroller.fill", "airplane", "book.fill", "gift.fill"]
+    let icons: [(title: String, image: String)] = [
+        (title: "Bicicleta", image: "bicycle"),
+        (title: "Video Game", image: "gamecontroller.fill"),
+        (title: "Brinquedo", image: "airplane"),
+        (title: "Livro", image: "book.fill"),
+        (title: "Presente", image: "gift.fill")
+    ]
     
     var body: some View {
         NavigationStack {
@@ -37,8 +45,8 @@ struct AddGoalOrDepositView: View {
                     
                     if mode == 1 {
                         Picker("Ícone", selection: $selectedIcon) {
-                            ForEach(icons, id: \.self) { icon in
-                                Label(icon, systemImage: icon).tag(icon)
+                            ForEach(icons, id: \.image) { icon in
+                                Label(icon.title, systemImage: icon.image).tag(icon.image)
                             }
                         }
                     }

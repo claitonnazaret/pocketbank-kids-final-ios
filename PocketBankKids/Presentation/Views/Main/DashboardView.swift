@@ -87,7 +87,6 @@ struct DashboardView: View {
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 10)
                                 .background(Color(.secondarySystemGroupedBackground))
-                                .foregroundStyle(.white)
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
                         
@@ -99,7 +98,6 @@ struct DashboardView: View {
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 10)
                                 .background(Color(.secondarySystemGroupedBackground))
-                                .foregroundStyle(.white)
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
                     }

@@ -32,8 +32,17 @@ final class MissionsViewModel {
     ) {
         self.user = user
         self.repository = repository
-        self.apiService = apiService ?? MissionsAPIService()
+        
+        if let apiService {
+            self.apiService = apiService
+        } else {
+            let config = URLSessionConfiguration.ephemeral
+            config.protocolClasses = [MockMissionsUrlProtocol.self]
+            let mockSession = URLSession(configuration: config)
+            self.apiService = MissionsAPIService(session: mockSession)
+        }
     }
+
     
     func loadMissions() async {
         state = .loading
