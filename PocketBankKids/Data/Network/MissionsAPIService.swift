@@ -18,7 +18,7 @@ final class MissionsAPIService: MissionsAPIServiceProtocol {
     }
     
     func fetchMissions() async throws -> [MissionItem] {
-        guard let url = URL(string: "https://typicode.com") else {
+        guard let url = URL(string: "https://pocketbankkids.mock") else {
             throw NetworkError.invalidURL
         }
         
