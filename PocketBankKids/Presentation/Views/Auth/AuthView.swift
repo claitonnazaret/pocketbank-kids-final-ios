@@ -8,6 +8,11 @@ import SwiftUI
 
 struct AuthView: View {
     @Bindable var viewModel: AuthViewModel
+    @FocusState private var focusedField: Field?
+    
+    enum Field {
+        case name, email, password
+    }
     
     var body: some View {
         NavigationStack {
@@ -36,14 +41,19 @@ struct AuthView: View {
                         TextField("Nome da Criança", text: $viewModel.name)
                             .textFieldStyle(.roundedBorder)
                             .textContentType(.name)
+                            .focused($focusedField, equals: .name)
                     }
                     
                     TextField("E-mail", text: $viewModel.email)
                         .textFieldStyle(.roundedBorder)
                         .keyboardType(.emailAddress)
                         .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .focused($focusedField, equals: .email)
                     
-                    PasswordField("Senha (mín. 4 dígitos)", text: $viewModel.password)
+                    SecureField("Senha (mín. 4 dígitos)", text: $viewModel.password)
+                        .textFieldStyle(.roundedBorder)
+                        .focused($focusedField, equals: .password)
                     
                 }
                 .padding(.horizontal)
@@ -56,15 +66,27 @@ struct AuthView: View {
                         .padding(.horizontal)
                 }
                 
-                Button(action: viewModel.submit) {
-                    Text(viewModel.isRegisterMode ? "Começar Aventura 🚀" : "Entrar no Cofre 🔑")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(.orange)
-                        .foregroundStyle(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                Button{
+                    focusedField = nil
+                    viewModel.submit()
+                } label: {
+                    HStack(spacing: 10) {
+                        if viewModel.isLoading {
+                            ProgressView()
+                                .tint(.white)
+                            Text("Preparando seu cofrinho...")
+                        } else {
+                            Text(viewModel.isRegisterMode ? "Começar Aventura 🚀" : "Entrar no Cofre 🔑")
+                        }
+                    }
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(viewModel.isLoading ? .orange.opacity(0.7) : .orange)
+                    .foregroundStyle(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
+                .disabled(viewModel.isLoading)
                 .padding(.horizontal)
                 
                 Spacer()

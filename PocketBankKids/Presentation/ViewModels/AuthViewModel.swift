@@ -15,6 +15,7 @@ final class AuthViewModel {
     var email = ""
     var password = ""
     var errorMessage: String?
+    var isLoading = false
     var currentUser: UserAccount?
     
     private let repository: PocketBankRepositoryProtocol
@@ -33,7 +34,9 @@ final class AuthViewModel {
     }
     
     func submit() {
+        guard !isLoading else { return }
         errorMessage = nil
+        
         let cleanEmail = email.trimmingCharacters(in: .whitespaces).lowercased()
         
         guard !cleanEmail.isEmpty, cleanEmail.contains("@") else {
@@ -56,24 +59,44 @@ final class AuthViewModel {
                 errorMessage = "Este email já está cadastrado."
                 return
             }
-            do {
-                let created = try repository.createUser(name: name, email: cleanEmail, password: password)
-                UserDefaults.standard.set(created.email, forKey: sessionKey)
-                currentUser = created
-            } catch {
-                errorMessage = "Erro ao criar conta: \(error.localizedDescription)"
+        }
+        
+        isLoading = true
+        
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(350))
+            
+            if isRegisterMode {
+                do {
+                    let created = try repository.createUser(
+                        name: name.trimmingCharacters(in: .whitespaces),
+                        email: cleanEmail,
+                        password: password
+                    )
+                    UserDefaults.standard.set(created.email, forKey: sessionKey)
+                    isLoading = false
+                    currentUser = created
+                } catch {
+                    isLoading = false
+                    errorMessage = "Erro ao criar conta: \(error.localizedDescription)"
+                }
+                
+            } else {
+                guard let user = repository.fetchUser(email: cleanEmail) else {
+                    isLoading = false
+                    errorMessage = "Conta não encontrada. Cadastre-se primeiro!"
+                    return
+                }
+                guard user.passwordHash == password else {
+                    isLoading = false
+                    errorMessage = "Senha incorreta."
+                    return
+                }
+                
+                UserDefaults.standard.set(user.email, forKey: sessionKey)
+                isLoading = false
+                currentUser = user
             }
-        } else {
-            guard let user = repository.fetchUser(email: cleanEmail) else {
-                errorMessage = "Conta não encontrada. Cadastre-se primeiro!"
-                return
-            }
-            guard user.passwordHash == password else {
-                errorMessage = "Senha incorreta."
-                return
-            }
-            UserDefaults.standard.set(user.email, forKey: sessionKey)
-            currentUser = user
         }
     }
     
