@@ -64,6 +64,7 @@ final class AuthViewModel {
         isLoading = true
         
         Task { @MainActor in
+            defer { isLoading = false }
             try? await Task.sleep(for: .milliseconds(350))
             
             if isRegisterMode {

@@ -31,7 +31,9 @@ final class PocketBankRepository: PocketBankRepositoryProtocol {
     func fetchUser(email: String) -> UserAccount? {
         let normalized = email.lowercased().trimmingCharacters(in: .whitespaces)
         let descriptor = FetchDescriptor<UserAccount>(
-            predicate: #Predicate { $0.email == normalized }
+            predicate: #Predicate<UserAccount> { user in
+                user.email == normalized
+            }
         )
         return try? context.fetch(descriptor).first
     }

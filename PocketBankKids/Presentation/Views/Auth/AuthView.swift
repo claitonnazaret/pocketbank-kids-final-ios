@@ -50,10 +50,12 @@ struct AuthView: View {
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                         .focused($focusedField, equals: .email)
+                        .disabled(viewModel.isLoading)
                     
                     SecureField("Senha (mín. 4 dígitos)", text: $viewModel.password)
                         .textFieldStyle(.roundedBorder)
                         .focused($focusedField, equals: .password)
+                        .disabled(viewModel.isLoading)
                     
                 }
                 .padding(.horizontal)

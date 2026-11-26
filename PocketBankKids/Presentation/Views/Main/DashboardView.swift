@@ -45,10 +45,10 @@ struct DashboardView: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding()
-                    background(
+                    .background(
                         LinearGradient(colors: [.orange, .pink], startPoint: .topLeading, endPoint: .bottomTrailing)
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: 18))
+                     )
+                     .clipShape(RoundedRectangle(cornerRadius: 18))
                     
                     AvatarEvolutionCard(user: viewModel.user)
                     
