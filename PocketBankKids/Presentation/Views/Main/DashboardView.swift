@@ -130,10 +130,15 @@ struct DashboardView: View {
                                                 Text(goal.title)
                                                     .font(.headline)
                                                     .foregroundStyle(.primary)
+                                                Spacer()
                                                 if goal.isCompleted {
-                                                    Text("✅ Concluída")
+                                                    Text("✅ 100%")
                                                         .font(.caption.bold())
                                                         .foregroundStyle(.green)
+                                                } else {
+                                                    Text("\(Int(goal.progress * 100))%")
+                                                        .font(.caption.bold())
+                                                        .foregroundStyle(.secondary)
                                                 }
                                             }
                                             
@@ -141,7 +146,7 @@ struct DashboardView: View {
                                                 .tint(goal.isCompleted ? .green : .orange)
                                             
                                             Text("\(goal.currentAmount.formatted(.currency(code: "BRL"))) de \(goal.targetAmount.formatted(.currency(code: "BRL")))")
-                                                .font(.caption)
+                                                .font(.caption.bold())
                                                 .foregroundStyle(.secondary)
                                         }
                                         Image(systemName: "chevron.right")

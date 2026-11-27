@@ -42,8 +42,8 @@ struct GoalDetailView: View {
                         Text("Adicionar moedas nesta meta:")
                         .font(.subheadline.bold())
                     
-                    HStack(spacing: 12) {
-                        ForEach(["5", "10", "25"], id: \.self) { preset in
+                    HStack(spacing: 4) {
+                        ForEach(["25", "50", "100"], id: \.self) { preset in
                             Button("R$ \(preset)") {
                                 depositAmount = preset
                             }
