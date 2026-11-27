@@ -7,7 +7,7 @@
 import Foundation
 
 protocol MissionsAPIServiceProtocol {
-    func fetchMissions() async throws -> [MissionItem]
+    func fetchMissions(limit: Int, skip: Int) async throws -> DummyProductsResponse
 }
 
 final class MissionsAPIService: MissionsAPIServiceProtocol {
@@ -16,30 +16,29 @@ final class MissionsAPIService: MissionsAPIServiceProtocol {
     init(session: URLSession = .shared) {
         self.session = session
     }
-    
-    func fetchMissions() async throws -> [MissionItem] {
-        guard let url = URL(string: "https://api.pocketbankkids.mock") else {
-            throw NetworkError.invalidURL
+
+    func fetchMissions(limit: Int = 5, skip: Int) async throws -> DummyProductsResponse {
+        var components = URLComponents(string: "https://dummyjson.com/products")
+        components?.queryItems = [
+            URLQueryItem(name: "limit", value: "\(limit)"),
+            URLQueryItem(name: "skip", value: "\(skip)"),
+            URLQueryItem(name: "select", value: "id,title,description,price,stock")
+        ]
+
+        guard let url = components?.url else {
+            throw URLError(.badURL)
         }
-        
-        do {
-            let (data, response) = try await session.data(from: url)
-            
-            guard let httpResponse = response as? HTTPURLResponse else {
-                throw NetworkError.noConnection
-            }
-            
-            guard (200...299).contains(httpResponse.statusCode) else {
-                throw NetworkError.requestFailed(statusCode: httpResponse.statusCode)
-            }
-            
-            return try JSONDecoder().decode([MissionItem].self, from: data)
-        } catch is DecodingError {
-            throw NetworkError.decodindError
-        } catch let error as NetworkError {
-            throw error
-        } catch {
-            throw NetworkError.noConnection
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw URLError(.badServerResponse)
         }
+
+        return try JSONDecoder().decode(DummyProductsResponse.self, from: data)
     }
 }

@@ -4,7 +4,6 @@
 //
 //  Created by Nazaret, Claiton Milton Augusto on 26/11/26.
 //
-
 import Foundation
 import Observation
 
@@ -25,6 +24,9 @@ final class MissionsViewModel {
     private let repository: PocketBankRepositoryProtocol
     private let user: UserAccount
     
+    private var currentSkip = 0
+    private let limit = 5
+    
     init(
         user: UserAccount,
         repository: PocketBankRepositoryProtocol,
@@ -32,27 +34,26 @@ final class MissionsViewModel {
     ) {
         self.user = user
         self.repository = repository
-        
-        if let apiService {
-            self.apiService = apiService
-        } else {
-            let config = URLSessionConfiguration.ephemeral
-            config.protocolClasses = [MockMissionsUrlProtocol.self]
-            let mockSession = URLSession(configuration: config)
-            self.apiService = MissionsAPIService(session: mockSession)
-        }
+        self.apiService = apiService ?? MissionsAPIService(session: .shared)
     }
-
     
     func loadMissions() async {
         state = .loading
         do {
-            let fetched = try await apiService.fetchMissions()
-            self.missions = fetched.map { item in
+            let response = try await apiService.fetchMissions(limit: limit, skip: currentSkip)
+            
+            self.missions = response.products.map { item in
                 var copy = item
                 copy.isCompleted = user.completedMissionIds.contains(item.id)
                 return copy
             }
+            
+            if currentSkip + limit < response.total {
+                currentSkip += limit
+            } else {
+                currentSkip = 0
+            }
+            
             state = .success
         } catch {
             state = .error(error.localizedDescription)
@@ -68,5 +69,10 @@ final class MissionsViewModel {
         } catch {
             state = .error("Não foi possível salvar a recompensa.")
         }
+    }
+    
+    var isLoading: Bool {
+        if case .loading = state { return true }
+        return false
     }
 }

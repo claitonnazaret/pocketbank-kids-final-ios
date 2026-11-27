@@ -17,7 +17,7 @@ final class UserAccount {
     var balance: Double
     var xp: Int
     var avatarSeed: String
-    var completedMissionIdsRaw: String
+    var completedMissionIds: [Int]
     
     init(
         id: UUID = UUID(),
@@ -27,7 +27,7 @@ final class UserAccount {
         balance: Double = 0.0,
         xp: Int = 0,
         avatarSeed: String = "dragon",
-        completedMissionIdsRaw: String = "") {
+        completedMissionIds: [Int] = []) {
         self.id = id
         self.name = name
         self.email = email
@@ -35,20 +35,9 @@ final class UserAccount {
         self.balance = balance
         self.xp = xp
         self.avatarSeed = avatarSeed
-        self.completedMissionIdsRaw = completedMissionIdsRaw
+        self.completedMissionIds = completedMissionIds
     }
-    
-    var completedMissionIds: [Int] {
-        get {
-            completedMissionIdsRaw
-                .split(separator: ",")
-                .compactMap { Int($0) }
-        }
-        set {
-            completedMissionIdsRaw = newValue.map(String.init).joined(separator: ",")
-        }
-    }
-    
+        
     var level: Int {
         max(1, (xp / 100) + 1)
     }

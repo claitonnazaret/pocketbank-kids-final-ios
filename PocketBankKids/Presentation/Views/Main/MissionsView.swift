@@ -8,6 +8,7 @@ import SwiftUI
 
 struct MissionsView: View {
     @State var viewModel: MissionsViewModel
+    @State private var isLoadingMore = false
     let onMissionCompleted: () -> Void
     
     var body: some View {
@@ -16,7 +17,8 @@ struct MissionsView: View {
             case .idle, .loading:
                 ProgressView("Buscando missões na API...")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-            case .error(let message):
+                
+            case .error(let message) where viewModel.missions.isEmpty:
                 ContentUnavailableView {
                     Label("Ops! Algo deu errado", systemImage: "wifi.exclamationmark")
                 } description: {
@@ -27,7 +29,8 @@ struct MissionsView: View {
                     }
                     .buttonStyle(.borderedProminent)
                 }
-            case .success:
+                
+            default:
                 if viewModel.missions.isEmpty {
                     ContentUnavailableView("Nenhuma missão disponível", systemImage: "star.slash")
                 } else {
@@ -74,7 +77,35 @@ struct MissionsView: View {
                         }
                         .padding(.vertical, 4)
                     }
+                    .disabled(isLoadingMore)
                 }
+            }
+        }
+        .safeAreaInset(edge: .bottom) {
+            if !viewModel.missions.isEmpty {
+                Button {
+                    Task {
+                        await viewModel.loadMissions()
+                    }
+                } label: {
+                    HStack(spacing: 10) {
+                        if viewModel.isLoading {
+                            ProgressView()
+                                .tint(.white)
+                        }
+                        Text(viewModel.isLoading ? "Carregando..." : "Carregar Novas Missões")
+                            .font(.headline)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+                    .foregroundStyle(.white)
+                    .background(viewModel.isLoading ? Color.orange.opacity(0.75) : Color.orange)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
+                .disabled(viewModel.isLoading)
+                .padding(.horizontal)
+                .padding(.vertical, 10)
+                .background(.bar)
             }
         }
         .navigationTitle("Missões Diárias (API)")
@@ -84,3 +115,4 @@ struct MissionsView: View {
         }
     }
 }
+
