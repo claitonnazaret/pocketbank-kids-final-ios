@@ -41,5 +41,8 @@ O **PocketBank Kids** transforma o ato de poupar em uma jornada estilo RPG: a ca
 ---
 
 ## 👥 Integrantes
-- Claiton Nazaret — Desenvolvimento iOS, SwiftUI, SwiftData & Arquitetura MVVM
+- Claiton Nazaret (claitonnazaret@gmail.com)— Desenvolvimento iOS, SwiftUI, SwiftData & Arquitetura MVVM-
+- Glauciany Brandao dos Santos (glauciany.a.santos@capgemini.com) — Desenvolvimento iOS, SwiftUI, SwiftData & Arquitetura MVVM
+- Thiago Servio Benedicto (thiago.benedicto@capgemini.com) — Desenvolvimento iOS, SwiftUI, SwiftData & Arquitetura MVVM
+- Josemberg Sousa Duarte (josembergsduarte@gmail.com) — Desenvolvimento iOS, SwiftUI, SwiftData & Arquitetura MVVM
 
